@@ -107,4 +107,36 @@ FROM SalesData
 GROUP BY DATENAME(WEEKDAY, transaction_date)
 ORDER BY total_sales;
 
+        --days with highest & lowest sales
+SELECT * FROM
+    --highest day
+    (SELECT TOP 1
+    DATENAME(WEEKDAY, transaction_date) AS Day,
+    ROUND(SUM(transaction_qty*unit_price),2) AS total_sales
+    FROM SalesData
+    GROUP BY DATENAME(WEEKDAY, transaction_date)
+    ORDER BY total_sales DESC) AS highest_day
+UNION ALL
+SELECT * FROM
+    --lowest day
+    (SELECT TOP 1
+    DATENAME(WEEKDAY, transaction_date) AS Day,
+    ROUND(SUM(transaction_qty*unit_price),2) AS total_sales
+    FROM SalesData
+    GROUP BY DATENAME(WEEKDAY, transaction_date)
+    ORDER BY total_sales) AS Lowest_day;
+
+        -- Second highest sales day
+SELECT day, total_sales
+FROM 
+(
+        SELECT 
+            DATENAME(WEEKDAY, transaction_date) AS day,
+            ROUND(SUM(transaction_qty * unit_price), 2) AS total_sales,
+            DENSE_RANK() OVER (ORDER BY SUM(transaction_qty * unit_price) DESC) AS sales_rank
+        FROM SalesData
+        GROUP BY DATENAME(WEEKDAY, transaction_date)
+) t
+WHERE sales_rank = 2;
+
        
