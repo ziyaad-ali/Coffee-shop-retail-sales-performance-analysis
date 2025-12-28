@@ -25,6 +25,7 @@ CREATE TABLE SalesData (
     product_category VARCHAR(30)
 );
 GO
+    
 -- Import csv file
 BULK INSERT SalesData
 FROM 'C:\data\Coffee Shop Sales(Transactions).csv'
@@ -35,6 +36,11 @@ WITH (
     TABLOCK
 );
 GO
+    
+-- Table structure reference
+EXEC sp_help 'SalesData';
+GO
+    
   -- Data Validation Checks
 
 -- Total rows loaded
@@ -53,3 +59,16 @@ FROM SalesData
 WHERE transaction_id IS NULL;
 GO
 
+-- Sales Performance KPIs
+
+    -- Measures overall revenue, transactions, quantity sold, and average order value
+SELECT  
+        --total revenue
+        ROUND(SUM(transaction_qty*unit_price),2) AS total_revenue, 
+        --total transactions
+        COUNT(*) AS total_transactions, 
+        --total quantity sold generally
+        SUM(transaction_qty) AS total_quantity,
+        --average revenue per transaction
+        ROUND(SUM(transaction_qty * unit_price) / COUNT(transaction_id), 2) AS average_order_value 
+FROM SalesData;
