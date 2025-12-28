@@ -160,4 +160,27 @@ SELECT
 FROM SalesData
 GROUP BY DATEPART(HOUR, transaction_time)
 ORDER BY DATEPART(HOUR, transaction_time);
-       
+
+
+--Product type and category KPIs
+
+        --total sales for each product
+SELECT  product_type,
+        ROUND(SUM(transaction_qty * unit_price), 2) AS total_sales
+FROM SalesData
+GROUP BY product_type
+ORDER BY ROUND(SUM(transaction_qty * unit_price), 2) DESC;
+
+        --total sales product category-wise
+SELECT
+    product_type,
+    product_category,
+    ROUND(SUM(transaction_qty * unit_price), 2) AS total_sales
+FROM SalesData
+GROUP BY
+    product_category,
+    product_type
+ORDER BY
+    total_sales DESC;
+
+
