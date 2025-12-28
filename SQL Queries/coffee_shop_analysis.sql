@@ -211,3 +211,43 @@ FROM RankedSales
 WHERE rnk = 1
 ORDER BY hour;
 
+--Store performance KPIs
+
+    -- Store-wise total sales
+SELECT
+    store_location,
+    ROUND(SUM(transaction_qty * unit_price), 2) AS total_sales
+FROM SalesData
+GROUP BY store_location
+ORDER BY total_sales DESC;
+
+    --top product of each store
+WITH StoreProductSales AS (
+    SELECT
+        store_location,
+        product_category,
+        product_type,
+        SUM(transaction_qty * unit_price) AS total_sales
+    FROM SalesData
+    GROUP BY
+        store_location,
+        product_category,
+        product_type
+),
+RankedProducts AS (
+    SELECT *,
+           DENSE_RANK() OVER (
+               PARTITION BY store_location
+               ORDER BY total_sales DESC
+           ) AS rnk
+    FROM StoreProductSales
+)
+SELECT
+    store_location,
+    product_category,
+    product_type,
+    ROUND(total_sales, 2) AS total_sales
+FROM RankedProducts
+WHERE rnk = 1
+ORDER BY store_location;
+
