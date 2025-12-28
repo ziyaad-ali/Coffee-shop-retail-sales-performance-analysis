@@ -72,3 +72,39 @@ SELECT
         --average revenue per transaction
         ROUND(SUM(transaction_qty * unit_price) / COUNT(transaction_id), 2) AS average_order_value 
 FROM SalesData;
+
+--Time Based KPIs
+
+        --Total sales per month
+SELECT 
+    DATENAME(MONTH, transaction_date) AS month,
+    ROUND(SUM(unit_price * transaction_qty), 2) AS total_sales
+FROM SalesData
+GROUP BY DATENAME(MONTH, transaction_date)
+ORDER BY MIN(MONTH(transaction_date));
+
+
+        --top month with highest sales
+SELECT TOP 1 
+    DATENAME(MONTH, transaction_date) as MONTH,
+    ROUND(SUM(transaction_qty*unit_price),2) AS total_sales
+FROM SalesData
+GROUP BY DATENAME(MONTH, transaction_date)
+ORDER BY total_sales DESC;
+
+        --top month with lowest sales
+SELECT TOP 1 
+    DATENAME(MONTH, transaction_date) as MONTH,
+    ROUND(SUM(transaction_qty*unit_price),2) AS total_sales
+FROM SalesData
+GROUP BY DATENAME(MONTH, transaction_date)
+ORDER BY total_sales;
+        
+        --total sales per day
+SELECT DATENAME(WEEKDAY, transaction_date) AS Day,
+ROUND(SUM(transaction_qty*unit_price),2) AS total_sales
+FROM SalesData
+GROUP BY DATENAME(WEEKDAY, transaction_date)
+ORDER BY total_sales;
+
+       
