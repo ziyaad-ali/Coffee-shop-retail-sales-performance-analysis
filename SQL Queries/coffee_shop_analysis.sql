@@ -35,4 +35,21 @@ WITH (
     TABLOCK
 );
 GO
+  -- Data Validation Checks
+
+-- Total rows loaded
+SELECT COUNT(*) AS total_rows
+FROM SalesData;
+GO
+    
+-- Sample data check
+SELECT TOP 100 *
+FROM SalesData;
+GO
+
+-- Primary key NULL check
+SELECT COUNT(*) AS null_ids
+FROM SalesData
+WHERE transaction_id IS NULL;
+GO
 
