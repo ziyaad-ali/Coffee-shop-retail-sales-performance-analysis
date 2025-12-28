@@ -183,4 +183,31 @@ GROUP BY
 ORDER BY
     total_sales DESC;
 
+        --top product for each hour
+ WITH HourlySales AS (
+    SELECT
+        DATEPART(HOUR, transaction_time) AS hour,
+        product_category,
+        product_type,
+        SUM(transaction_qty * unit_price) AS total_sales
+    FROM SalesData
+    WHERE transaction_time IS NOT NULL
+    GROUP BY
+        DATEPART(HOUR, transaction_time),
+        product_category,
+        product_type
+),
+RankedSales AS (
+    SELECT *,
+           DENSE_RANK() OVER (PARTITION BY hour ORDER BY total_sales DESC) AS rnk
+    FROM HourlySales
+)
+SELECT
+    hour,
+    product_category,
+    product_type,
+    ROUND(total_sales, 2) AS total_sales
+FROM RankedSales
+WHERE rnk = 1
+ORDER BY hour;
 
