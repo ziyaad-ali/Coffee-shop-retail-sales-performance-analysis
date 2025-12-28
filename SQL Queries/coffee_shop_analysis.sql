@@ -139,4 +139,25 @@ FROM
 ) t
 WHERE sales_rank = 2;
 
+        --Weekday and Weekend sales
+SELECT 
+    CASE 
+        WHEN DATENAME(WEEKDAY, transaction_date) IN ('Saturday', 'Sunday') THEN 'Weekend'
+        ELSE 'Weekday'
+    END AS day_type,
+    ROUND(SUM(transaction_qty * unit_price), 2) AS total_sales
+FROM SalesData
+GROUP BY 
+    CASE 
+        WHEN DATENAME(WEEKDAY, transaction_date) IN ('Saturday', 'Sunday')THEN 'Weekend'
+        ELSE 'Weekday'
+    END;
+
+        --total sales per hour
+SELECT 
+    DATEPART(HOUR, transaction_time) AS hour,
+    ROUND(SUM(transaction_qty * unit_price), 2) AS total_sales
+FROM SalesData
+GROUP BY DATEPART(HOUR, transaction_time)
+ORDER BY DATEPART(HOUR, transaction_time);
        
